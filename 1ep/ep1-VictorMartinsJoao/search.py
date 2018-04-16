@@ -1,6 +1,5 @@
-# Victor Martins João
-# NUSP: 9793551
-#
+#Victor Martins João
+#NUSP: 9793551
 
 
 # search.py
@@ -213,7 +212,13 @@ class InterativeNode:
         self.action = successor[1]
         self.cost = successor[2]
         self.h = height
-        
+        if father != None:
+            if father.cost != None:
+                self.realCost = father.cost + successor[2]
+            else:
+                self.realCost = successor[2]
+        else :
+            self.realCost = 0
 
 def iterativeDeepeningSearch(problem):
     """
@@ -244,21 +249,27 @@ def iterativeDeepeningSearch(problem):
     	while not problem.isGoalState(currentNode.state) and flag:
    	    if currentNode.h < depth:
    	        for successor in problem.getSuccessors(currentNode.state):
-   	            newNode = InterativeNode(currentNode, successor,currentNode.h + 1)
+   	            newNode = InterativeNode(currentNode, successor, currentNode.h + 1)
    	            stack.push(newNode)
 
    	    if not stack.isEmpty():
    	        explored = True
                 while not stack.isEmpty() and explored:
                     explored = False
+                    update = True
                     currentNode = stack.pop()
                     for item in visited:
-                        if currentNode.state == item.state and item.h <= currentNode.h + 1:
+                        if currentNode.state == item.state:
+                            if item.realCost > currentNode.realCost:
+                                item.realCost = currentNode.realCost
+                                update = False
+                            else:
                                 explored = True
-                                break
+                            break
                 
                 if not explored:
-                    visited.append(currentNode)
+                    if update:
+                        visited.append(currentNode)
    	        else :
                     flag = False
             else:
@@ -335,13 +346,21 @@ def aStarSearch(problem, heuristic=nullHeuristic):
             explored = True
             while not minPq.isEmpty() and explored:
                 explored = False
+                needToAppend = True
                 currentNode = minPq.pop()
                 for item in visited:
-                    if currentNode.state == item.state and item.f <= currentNode.f:
+                    if currentNode.state == item.state:
+                        if item.f > currentNode.f:
+                            item.f = currentNode.f 
+                            needToAppend = False 
+                        else:
                             explored = True
-                            break
+                        break
+                        
+                           
             if not explored:
-                visited.append(currentNode)
+                if needToAppend:
+                    visited.append(currentNode)
             else :
                 flag = False
         else:
