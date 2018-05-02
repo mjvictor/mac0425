@@ -129,7 +129,23 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the total number of agents in the game
         """
         "*** YOUR CODE HERE ***"
+        scores = []
+        pacmanActions = gameState.getLegalActions(0)
+        for action in pacmanActions:
+            nextGameState = gameState.generateSuccessor(0, action)
+            scores.append(self.minGhosts(nextGameState, 1))
         util.raiseNotDefined()
+
+    def minGhosts(self, gameState, i):
+        scores = []
+        currentActions = gameState.getLegalActions(i)
+        if currentActions == None or i == gameState.getNumAgents():
+            return self.evaluationFunction()
+        
+        for action in currentActions:
+            scores.append(self.minGhosts(gameState.generateSuccessor(i, action), i + 1))            
+        
+        return min(scores)
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
